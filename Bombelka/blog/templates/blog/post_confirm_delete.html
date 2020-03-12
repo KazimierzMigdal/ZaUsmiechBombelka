@@ -1,0 +1,23 @@
+{% extends "blog/base.html" %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST" class="d-flex justify-content-center">
+            {% csrf_token %}
+            <fieldset>
+                <h2>Czy chcesz usunąć  post o tytule <i>{{object.title}}</i>?</h2>
+                <div class="row">
+                    <div class="col">
+                        <button class="btn btn-danger btn-block mb-1" type="submit">Tak, usuń</button>
+                    </div>
+                    <div class="col">
+                        <a class="btn btn-sample btn-block mb-1" href="{% url 'post-detail' object.id %}">Nie, porzuć zmiany</a>
+                    </div>
+                    <div class="w-100"></div>
+                    <div class="col">
+                        <a class="btn btn-sample btn-block mt-1" href="{% url 'blog-home' %}">Wróć do bloga</a>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+{% endblock content %}

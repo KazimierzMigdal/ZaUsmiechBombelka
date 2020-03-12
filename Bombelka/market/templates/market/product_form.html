@@ -1,0 +1,40 @@
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags%}
+{% block content %}
+<div class="content-section">
+<form method="POST"  enctype="multipart/form-data">
+    {% csrf_token %}
+    <fieldset class="form-group">
+        <legend class="d-flex justify-content-center">Nowy Produkt</legend>
+                {{ form.title|as_crispy_field }}
+        <div class="form-inline ml-1 mb-2 mt-2 mr-1">
+                Produkt przeznaczony dla {{ form.tag_sex|as_crispy_field }} w wieku {{ form.tag_age|as_crispy_field }}
+        </div>
+        <div class="form-row mt-2">
+            <div class="form-group col mb-2">
+                {{ form.description|as_crispy_field }}
+            </div>
+        </div>
+        <br>
+        <button class="btn btn-sample btn-block" type="submit">Dodaj Produkt</button>
+</fieldset>
+</form>
+</div>
+
+
+    <!-- <div class="content-section">
+        <form method="POST"  enctype="multipart/form-data" class="d-flex justify-content-center">
+            {% csrf_token %}
+            <fieldset  class="d-flex justify-content-centerk">
+                <legend class="d-flex justify-content-center"> Nowy Produkt</legend>
+                {{ form.title|as_crispy_field }}
+                <p>Poniższe zdjęcie będzie widoczna na stronie głównej marketu</p>
+                {{ form.photo_1|as_crispy_field }}
+                {{ form.description|as_crispy_field }}
+                <button class="btn btn-sample btn-block" type="submit">Publikuj</button>
+            </fieldset>
+        </form>
+        <br>
+        <a class="mr-2" href="{% url 'blog-home' %}"><button class="btn btn-outline-info btn-block">Wróć do bloga</button></a>
+    </div> -->
+{% endblock content %}

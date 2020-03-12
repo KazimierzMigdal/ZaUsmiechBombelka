@@ -1,0 +1,97 @@
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags%}
+{% block content %}
+<div class="sticky-top">
+<button class="btn btn-sample btn-block sticky-top" onclick="toggle_div_fun('post_creator');">Dodaj post</button>
+<div id='post_creator' style='display: none;'>
+<article class="media content-section">
+    <img class="rounded-circle article-img" src="{{ request.user.profile.image.url }}">
+    <div class="media-body">
+        <div class="article-metadata">
+            <div class="d-flex align-content-end flex-wrap" >
+                <div class="p-2 mr-auto">
+                    <a class="mr-2" href="{% url 'profile' request.user.username %}">{{ request.user.username }}</a>
+                </div>
+                <div class="p-2 mr-auto">
+                    <small class="text-muted">Teraz</small>
+                </div>
+            </div>
+        </div>
+        <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+                <div class="form-row">
+                    <div class="form-group col mb-2">
+                        {{ form.title|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col mb-2">
+                        {{ form.content|as_crispy_field }}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-sample btn-block" type="submit">Dodaj post</button>
+            </div>
+        </form>
+    </div>
+</article>
+</div>
+</div>
+
+    <div id="post-list">
+        {% include "blog/list_ajax.html" %}
+    </div>
+{% endblock content %}
+
+{% block domready %}
+    var page = 1;
+    var empty_page = false;
+    var block_request = false;
+
+    $(window).scroll(function() {
+        var margin = $(document).height() - $(window).height() - 200;
+        if  ($(window).scrollTop() > margin && empty_page == false && block_request == false) {
+            block_request = true;
+            page += 1;
+            $.get('?page=' + page, function(data) {
+                if(data == '')
+                {
+                    empty_page = true;
+                }
+                else {
+                    block_request = false;
+                    $('#post-list').append(data);
+                }
+            });
+        }
+    });
+
+$('a.like').click(function(e){
+        e.preventDefault();
+        $.post('{% url "like" %}',
+            {
+                id: $(this).data('id'),
+                action: $(this).data('action')
+            },
+            function(data){
+                if (data['status'] == 'ok')
+                {
+                    var previous_action = $('a.like').data('action');
+                    var id = $(this).data('id');
+
+                    // toggle data-action
+                    $('a.like').data('action', previous_action == 'like' ? 'unlike' : 'like');
+                    // toggle link text
+                    $('a.like span.'+id).text(previous_action == 'like' ? 'Unlike' : 'Like');
+
+                    // update total likes
+                    var previous_likes = parseInt($('span.count .total .' +id).text());
+                    $('span.count .total .' + id).text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+                }
+        });
+
+    });
+
+{% endblock %}

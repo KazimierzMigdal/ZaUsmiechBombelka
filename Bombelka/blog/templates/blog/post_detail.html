@@ -1,0 +1,120 @@
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags%}
+{% block content %}
+<article class="media content-section">
+    <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
+    <div class="media-body">
+        <div class="article-metadata">
+            <div class="d-flex align-content-end flex-wrap" >
+                <div class="p-2 mr-auto">
+                    <a class="mr-2" href="{% url 'profile' object.author.username %}">{{ object.author }}</a>
+                </div>
+                <div class="p-2 mr-auto">
+                    <small class="text-muted">{{ object.date_posted|date:"d F Y" }}</small>
+                </div>
+                {% if post.author == user %}
+                <div class="p-2">
+                    <a class="btn btn-danger btn-sm float-right" href="{% url 'post-delete' object.id%}">Usuń</a>
+                    <a class="btn btn-sample btn-sm float-right mr-2" href="{% url 'post-update' object.id%}">Popraw</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <h2><a class="article-title" href="{% url 'post-detail' post.id%}">{{ object.title }}</a></h2>
+        <p class="article-content">{{ object.content }}</p>
+        <br>
+        <div>
+        <a href="#" data-id="{{ object.id }}"  data-action="{% if request.user in object.users_like.all %}un{% endif %}like" class="like button">
+                    {% if request.user not in object.users_like.all %}
+                        Like
+                    {% else %}
+                        Unlike
+                    {% endif %}
+                </a>
+        <br>
+        <span class="count">
+         Polubił{{ post.users_like.count|pluralize:"o"}} <span class="total">{{ post.users_like.count}}</span> użytkownik{{ post.users_like.count|pluralize:"ów"}}
+         </span>
+         </div>
+        <br>
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <div class="d-flex align-content-end flex-wrap">
+                <div class="p-2 mr-auto">
+                  <img class="rounded-circle article-img" src="{{ request.user.profile.image.url }}">
+                </div>
+                <div class="p-2 mr-auto">
+                  <small><a class="mr-2" href="{% url 'profile' request.user.username %}">{{ request.user.username }}</a></small>
+                </div>
+                <div class="p-2 mr-auto">
+                  <small class="text-muted">Teraz</small>
+                </div>
+              </div>
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="form-group">
+                <div class="form-row">
+                  <div class="form-group col">
+                    {{ form.text|as_crispy_field}}
+                  </div>
+                </div>
+                <button class="btn btn-sample btn-block" type="submit">Dodaj komentarz</button>
+              </div>
+            </form>
+          </div>
+        </article>
+        {% for comment in post.comments.all %}
+          <article class="media content-section">
+            <div class="media-body">
+              <div class="article-metadata">
+                <div class="d-flex align-content-end flex-wrap">
+                  <div class="p-2 mr-auto">
+                    <img class="rounded-circle article-img" src="{{ comment.author.profile.image.url }}">
+                  </div>
+                  <div class="p-2 mr-auto">
+                    <small><a class="mr-2" href="{% url 'profile' comment.author.username %}">{{ comment.author }}</a></small>
+                  </div>
+                  <div class="p-2 mr-auto">
+                    <small class="text-muted">{{ comment.created_date|date:'d b, y' }}</small>
+                  </div>
+                </div>
+              </div>
+              <small>{{ comment.text|linebreaks }}</small>
+            </div>
+          </article>
+        {% endfor %}
+        <br>
+        <a href="{% url 'blog-home' %}"><button class="btn btn-sample btn-block">Wróć do bloga</button></a>
+    </div>
+</article>
+{% endblock content %}
+
+{% block domready %}
+    $('a.like').click(function(e){
+    e.preventDefault();
+    $.post('{% url "like" %}',
+      {
+        id: $(this).data('id'),
+        action: $(this).data('action')
+      },
+      function(data){
+        if (data['status'] == 'ok')
+        {
+          var previous_action = $('a.like').data('action');
+
+          // toggle data-action
+          $('a.like').data('action', previous_action == 'like' ? 'unlike' : 'like');
+          // toggle link text
+          $('a.like').text(previous_action == 'like' ? 'Unlike' : 'Like');
+
+          // update total likes
+          var previous_likes = parseInt($('span.count .total').text());
+          $('span.count .total').text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+        }
+      }
+    );
+  });
+
+{% endblock %}

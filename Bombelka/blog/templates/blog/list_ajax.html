@@ -1,0 +1,71 @@
+{% for post in posts %}
+<article class="media content-section">
+    <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
+    <div class="media-body">
+        <div class="article-metadata">
+            <div class="d-flex align-content-end flex-wrap" >
+                <div class="p-2 mr-auto">
+                    <a class="mr-2" href="{% url 'profile' post.author.username %}">{{ post.author }}</a>
+                </div>
+                <div class="p-2 mr-auto">
+                    <small class="text-muted">{{ post.date_posted|date:"d F Y" }}</small>
+                </div>
+                {% if post.author == user %}
+                <div class="p-2">
+                    <a class="btn btn-danger btn-sm float-right" href="{% url 'post-delete' post.id%}">Usuń</a>
+                    <a class="btn btn-sample btn-sm float-right mr-2" href="{% url 'post-update' post.id%}">Popraw</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <h2><a class="article-title" href="{% url 'post-detail' post.id%}">{{ post.title }}</a></h2>
+        <p class="article-content">{{ post.content }}</p>
+        <br>
+        <!-- <div class="d-flex align-content-start flex-wrap">
+            <div class="mr-auto p-2">
+                <span class="count">
+         Polubił{{ post.users_like.count|pluralize:"o"}} <span class="total"><span class="{{post.id}}">{{ post.users_like.count}}</span></span> użytkownik{{ post.users_like.count|pluralize:"ów"}}
+         </span>
+            </div>
+            <div class="p-2">
+                <a href="#" data-id="{{ post.id }}"  data-action="{% if request.user in post.users_like.all %}un{% endif %}like" class="like button"><span class="{{post.id}}">
+                    {% if request.user not in post.users_like.all %}
+                        Like
+                    {% else %}
+                        Unlike
+                    {% endif %}
+                </span>
+                </a>
+            </div>
+
+        </div> -->
+        <button class="btn btn-sample btn-block mt-1" onclick="toggle_div_fun('{{ post.id }}');">Zobacz komentarze ( {{ post.comments.count }} )</button>
+        <div id="{{ post.id }}" style="display:none">
+            <br>
+            {% for comment in post.comments.all %}
+                <article class="media content-section">
+                    <div class="media-body">
+                        <div class="article-metadata">
+                            <div class="d-flex align-content-end flex-wrap">
+                                <div class="p-2 mr-auto">
+                                    <img class="rounded-circle article-img" src="{{ comment.author.profile.image.url }}">
+                                </div>
+                                <div class="p-2 mr-auto">
+                                   <small><a class="mr-2" href="{% url 'profile' comment.author.username %}">{{ comment.author }}</a></small>
+                                </div>
+                                <div class="p-2 mr-auto">
+                                   <small class="text-muted">{{ comment.created_date|date:'d b, y' }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <small>{{ comment.text|linebreaks }}</small>
+                    </div>
+                </article>
+            {% empty %}
+                <p>Ten post nie był jeszcze komentowany</p>
+            {% endfor %}
+        </div>
+            <a class="mr-2" href="{% url 'add_comment_to_post' pk=post.pk %}"><button class="btn btn-sample btn-block mt-2">Dodaj komentarz</button></a>
+        </div>
+</article>
+{% endfor %}

@@ -1,0 +1,33 @@
+{% extends "blog/base.html" %}
+{% block content %}
+<article class="media content-section">
+    <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
+    <div class="media-body">
+        <div class="article-metadata">
+            <a class="mr-2" href="#">{{ object.author }}</a>
+            <small class="text-muted">{{ object.date_posted|date:"d F Y" }}</small>
+           {% if object.author == user %}
+                <div class="article-title" >
+                    <a class="btn btn-danger btn-sm float-right mt-2" href="{% url 'product-delete' product.id%}">Usuń</a>
+                    <a class="btn btn-sample btn-sm float-right mt-2" href="{% url 'product-update' product.id%}">Popraw</a>
+                </div>
+            {% endif %}
+        </div>
+        <h2 class="article-title">{{ object.title }}</h2>
+        <p>Przeznaczony dla <strong>{{object.get_tag_sex_display}}</strong> w wieku <strong>{{object.get_tag_age_display}}</strong>.</p>
+        <div class = "row justify-content-center">
+            <img class="img-fluid mb-2" src="{{ object.photo_1.url }}">
+        </div>
+        <p class="article-content">{{ object.description }}</p>
+        <div class="row justify-content-center">
+            <div class="col">
+            <img class="img-fluid mb-2 mt-2" src="{{ object.photo_2.url }}">
+            </div>
+            <div class="col">
+            <img class="img-fluid mb-2 mt-2" src="{{ object.photo_3.url }}">
+            </div>
+        </div>
+        <a class="mr-2" href="{% url 'market-home' %}"><button class="btn btn-outline-info btn-block">Wróć do marketu</button></a>
+    </div>
+</article>
+{% endblock content %}

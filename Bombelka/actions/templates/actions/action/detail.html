@@ -1,0 +1,59 @@
+{% extends "blog/base.html" %}
+{% block content %}
+<h1>Aktualności</h1>
+<article class="media content-section">
+    <div class="media-body">
+        <div class="article-metadata">
+            <h3>Ci użykownicy publikujący produkty w grupie twoich zainteresowań cieszą się największą popularnością</h3>
+        </div>
+        <div class="article-content">
+            <div class="row">
+                {% for user in users %}
+                <div class="col">
+                    <img class="rounded-circle article-img" src="{{ user.profile.image.url }}">
+                    <p>{{user.username}}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="article-metadata">
+            <h3>To produkty które ostatnio dodali</h3>
+        </div>
+        <div class="article-content">
+            <div class="row">
+                    {% for product in products%}
+                    <div class="col">
+                        <img class="img-fluid" alt="Responsive image" src="{{ product.photo_1.url }}">
+                        <p>{{product.title}}</p>
+                    </div>
+                    {% endfor %}
+            </div>
+        </div>
+    </div>
+</article>
+<h3>Dodawaj używtkowników do obserwowanych by zobaczyć ich najnowsze posty, komentarze i produkty</h3>
+{% for action in actions %}
+{% with user=action.user profile=action.user.profile %}
+<article class="media content-section">
+    <img class="rounded-circle article-img" src="{{ user.profile.image.url }}">
+    <div class="media-body">
+        <div class="article-metadata">
+            <div class="d-flex align-content-end flex-wrap" >
+                <div class="p-2 mr-auto">
+                    <a class="mr-2" href="{% url 'profile' user.username %}">{{ user.username }}</a>
+                </div>
+                <div class="p-2 mr-auto">
+                    <small class="text-muted">{{ action.created|timesince}} temu</small>
+                </div>
+            </div>
+        </div>
+        {% if action.verb == 'zaczął obserwować' %}
+            <h4>{{ action.verb }} <a href="{% url 'profile' action.target %}">{{action.target}}</a></h4>
+        {% else %}
+            <h4>{{ action.verb }} <a href="{{action.target.get_absolute_url}}">{{action.target}}</a></h4>
+        {% endif %}
+    </div>
+</article>
+{% endwith %}
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "blog/base.html" %}
+{% block content %}
+    <h2>Wylogowanie zakończono pomyślnie!</h2>
+    <br>
+    <div class="d-flex justify-content-center">
+        <a class="mr-2" href="{% url 'login' %}"><button class="btn btn-sample btn-block">Zaloguj się ponownie</button></a>
+    </div>
+    <br>
+{% endblock content %}

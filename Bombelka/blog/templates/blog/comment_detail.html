@@ -1,0 +1,21 @@
+{% extends "blog/base.html" %}
+{% block content %}
+<article class="media content-section">
+    <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
+    <div class="media-body">
+        <div class="article-metadata">
+            <a class="mr-2" href="#">{{ object.author }}</a>
+            <small class="text-muted">{{ object.date_posted|date:"d F Y" }}</small>
+            <!-- {% if object.author == user %}
+                <a class="btn btn-danger btn-sm float-right mt-2" href="{% url 'post-delete' object.id%}">Usuń</a>
+                <a class="btn btn-secondary btn-sm float-right mt-2" href="{% url 'post-update' object.id%}">Popraw</a>
+            {% endif %} -->
+        </div>
+        <h2 class="article-title">Komentarz do postu o tytule: {{ object.post }}</h2>
+        <p class="article-content">{{ object.text }}</p>
+        <br>
+        <a class="mr-2" href="{% url 'blog-home' %}"><button class="btn btn-outline-info btn-block">Wróć do bloga</button></a>
+        <button class="btn btn-sample btn-block" onclick="toggle_div_fun('{{ post.id }}');">Zobacz komentarze ( {{ post.comments.count }} )</button>
+    </div>
+</article>
+{% endblock content %}

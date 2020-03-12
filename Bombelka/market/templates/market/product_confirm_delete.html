@@ -1,0 +1,17 @@
+{% extends "blog/base.html" %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST"  class="d-flex justify-content-center">
+            {% csrf_token %}
+            <fieldset  class="d-flex justify-content-centerk">
+                <h2>Czy chcesz usunąć  produkt z tytułem <i>{{object.title}}</i>?</h2>
+                <button class="btn btn-danger btn-block" type="submit">Tak, usuń</button>
+                <a href="{% url 'product-detail' object.id %}"><button class="btn btn-sample btn-block" href="{% url 'product-detail' object.id %}">Nie, porzuć zmiany</button></a>
+                <br>
+            </fieldset>
+        </form>
+        <!-- <button class="btn btn-sample btn-block" href="{% url 'post-detail' object.id %}">Nie, porzuć zmiany</button>
+        <br> -->
+        <a class="mr-2" href="{% url 'blog-home' %}"><button class="btn btn-outline-info btn-block">Wróć do bloga</button></a>
+    </div>
+{% endblock content %}
