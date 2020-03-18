@@ -66,13 +66,19 @@ a.article-title:hover {
   margin-right: 16px;
 }
 
+.comment-img {
+  height: 35px;
+  width: 35px;
+  margin-right: 16px;
+}
+
 .product-img {
-  hposition: absolute;
-    margin: auto;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+  position: absolute;
+  margin: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .article-metadata {
@@ -177,9 +183,9 @@ fieldset[disabled] .btn-sample.active {
 
 .count {
     color:#aaa;
-    border:3px solid #bbb;
-    border-radius:26px;
-    padding:10px 20px;
+    border:1px solid #bbb;
+    border-radius:16px;
+    padding:5px 10px;
 }
 
 a.like, a.follow { float:right; margin-top:-8px;}

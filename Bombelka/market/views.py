@@ -59,7 +59,7 @@ class ProductCreateView(LoginRequiredMixin,CreateView):
         if form_class is None:
             form_class = self.get_form_class()
         form = super(ProductCreateView, self).get_form(form_class)
-        form.fields['description'].widget = forms.Textarea(attrs={"rows":"6", "class":"form-control"})
+        form.fields['description'].widget = forms.Textarea(attrs={"rows":"6", "class":"form-control", "placeholder": "Opis Produktu"})
         form.fields['title'].widget = forms.TextInput(attrs={"class":"form-control",  "placeholder": "Nazwa Produktu"})
         form.fields['title'].lable=''
         return form

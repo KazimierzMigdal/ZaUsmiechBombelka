@@ -2,93 +2,109 @@
 {% load crispy_forms_tags%}
 {% block content %}
 <article class="media content-section">
-    <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
-    <div class="media-body">
-        <div class="article-metadata">
+  <div class="media-body">
+      <div class="article-metadata">
             <div class="d-flex align-content-end flex-wrap" >
                 <div class="p-2 mr-auto">
+                    <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
+                </div>
+                <div class="p-2 mr-auto">
                     <a class="mr-2" href="{% url 'profile' object.author.username %}">{{ object.author }}</a>
+                    <br>
+                    <small class="text-muted mr-2">{{ object.date_posted|date:"d F Y" }}</small>
                 </div>
-                <div class="p-2 mr-auto">
-                    <small class="text-muted">{{ object.date_posted|date:"d F Y" }}</small>
-                </div>
-                {% if post.author == user %}
-                <div class="p-2">
-                    <a class="btn btn-danger btn-sm float-right" href="{% url 'post-delete' object.id%}">Usuń</a>
-                    <a class="btn btn-sample btn-sm float-right mr-2" href="{% url 'post-update' object.id%}">Popraw</a>
-                </div>
-                {% endif %}
             </div>
+            {% if post.author == user %}
+            <div class="d-flex bd-highlight" >
+                <div class="mr-auto p-2 bd-highlight">
+                    <a class="btn btn-danger btn-sm float-right" href="{% url 'post-delete' object.id%}"><span style="font-size:smaller;">Usuń</span></a>
+                </div>
+                <div class="p-2 bd-highlight">
+                    <a class="btn btn-sample btn-sm float-right mr-2" href="{% url 'post-update' object.id%}"><span style="font-size:smaller;">Popraw</span></a>
+                </div>
+            </div>
+            {% endif %}
         </div>
-        <h2><a class="article-title" href="{% url 'post-detail' post.id%}">{{ object.title }}</a></h2>
-        <p class="article-content">{{ object.content }}</p>
-        <br>
-        <div>
-        <a href="#" data-id="{{ object.id }}"  data-action="{% if request.user in object.users_like.all %}un{% endif %}like" class="like button">
-                    {% if request.user not in object.users_like.all %}
-                        Like
-                    {% else %}
-                        Unlike
-                    {% endif %}
-                </a>
-        <br>
-        <span class="count">
-         Polubił{{ post.users_like.count|pluralize:"o"}} <span class="total">{{ post.users_like.count}}</span> użytkownik{{ post.users_like.count|pluralize:"ów"}}
-         </span>
-         </div>
-        <br>
-        <article class="media content-section">
-          <div class="media-body">
-            <div class="article-metadata">
-              <div class="d-flex align-content-end flex-wrap">
-                <div class="p-2 mr-auto">
-                  <img class="rounded-circle article-img" src="{{ request.user.profile.image.url }}">
-                </div>
-                <div class="p-2 mr-auto">
-                  <small><a class="mr-2" href="{% url 'profile' request.user.username %}">{{ request.user.username }}</a></small>
-                </div>
-                <div class="p-2 mr-auto">
-                  <small class="text-muted">Teraz</small>
-                </div>
-              </div>
-            </div>
-            <form method="POST" enctype="multipart/form-data">
-              {% csrf_token %}
-              <div class="form-group">
-                <div class="form-row">
-                  <div class="form-group col">
-                    {{ form.text|as_crispy_field}}
-                  </div>
-                </div>
-                <button class="btn btn-sample btn-block" type="submit">Dodaj komentarz</button>
-              </div>
-            </form>
-          </div>
-        </article>
-        {% for comment in post.comments.all %}
-          <article class="media content-section">
-            <div class="media-body">
-              <div class="article-metadata">
-                <div class="d-flex align-content-end flex-wrap">
-                  <div class="p-2 mr-auto">
-                    <img class="rounded-circle article-img" src="{{ comment.author.profile.image.url }}">
-                  </div>
-                  <div class="p-2 mr-auto">
-                    <small><a class="mr-2" href="{% url 'profile' comment.author.username %}">{{ comment.author }}</a></small>
-                  </div>
-                  <div class="p-2 mr-auto">
-                    <small class="text-muted">{{ comment.created_date|date:'d b, y' }}</small>
-                  </div>
-                </div>
-              </div>
-              <small>{{ comment.text|linebreaks }}</small>
-            </div>
-          </article>
-        {% endfor %}
-        <br>
-        <a href="{% url 'blog-home' %}"><button class="btn btn-sample btn-block">Wróć do bloga</button></a>
-    </div>
+      <h2><a class="article-title" href="{% url 'post-detail' post.id%}">{{ object.title }}</a></h2>
+      <p class="article-content">{{ object.content }}</p>
+      <br>
+      <div class="d-flex bd-highlight" >
+        <div class="mr-auto p-2 bd-highlight">
+          <span class="count">
+            <span style="font-size:smaller;">Polubień: <span class="total">{{ post.users_like.count}}</span></span>
+          </span>
+        </div>
+        <div class="p-2 bd-highlight">
+           <a href="#" data-id="{{ object.id }}"  data-action="{% if request.user in object.users_like.all %}un{% endif %}like" class=" btn btn-sample like button">
+              <span style="font-size:smaller;">{% if request.user not in object.users_like.all %}
+                Like
+                {% else %}
+                  Unlike
+                {% endif %}
+              </span>
+          </a>
+        </div>
+      </div>
+  </div>
 </article>
+
+<h3>Komentarze</h3>
+{% for comment in post.comments.all %}
+<article class="media content-section">
+  <div class="media-body">
+  <div class="article-metadata">
+    <div class="d-flex align-content-end flex-wrap">
+      <div class="p-2 mr-auto">
+        <img class="rounded-circle comment-img" src="{{ comment.author.profile.image.url }}">
+      </div>
+      <div class="p-2 mr-auto">
+        <small><a class="mr-2" href="{% url 'profile' comment.author.username %}">{{ comment.author }}</a></small>
+      </div>
+      <div class="p-2 mr-auto">
+        <small class="text-muted">{{ comment.created_date|date:'d b' }}</small>
+      </div>
+    </div>
+  </div>
+  <small>{{ comment.text|linebreaks }}</small>
+  </div>
+</article>
+{% endfor %}
+
+
+<article class="media content-section">
+  <div class="media-body">
+    <div class="article-metadata">
+      <div class="d-flex align-content-end flex-wrap">
+        <div class="p-2 mr-auto">
+          <img class="rounded-circle comment-img" src="{{ request.user.profile.image.url }}">
+        </div>
+        <div class="p-2 mr-auto">
+          <small><a class="mr-2" href="{% url 'profile' request.user.username %}">{{ request.user.username }}</a></small>
+        </div>
+        <div class="p-2 mr-auto">
+          <small class="text-muted">Teraz</small>
+        </div>
+      </div>
+    </div>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        <div class="form-row">
+          <div class="form-group col">
+            {{ form.text|as_crispy_field}}
+          </div>
+        </div>
+        <div class="position-relative">
+          <button class="btn btn-sample btn-block" type="submit"><small>Skomentuj</small></button>
+        </div>
+      </div>
+    </form>
+  </div>
+</article>
+
+<div class="position-relative mb-4">
+  <a href="{% url 'blog-home' %}"><button class="btn btn-sample btn-block">Wróć do bloga</button></a>
+</div>
 {% endblock content %}
 
 {% block domready %}

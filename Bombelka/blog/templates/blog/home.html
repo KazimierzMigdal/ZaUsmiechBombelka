@@ -5,15 +5,16 @@
 <button class="btn btn-sample btn-block sticky-top" onclick="toggle_div_fun('post_creator');">Dodaj post</button>
 <div id='post_creator' style='display: none;'>
 <article class="media content-section">
-    <img class="rounded-circle article-img" src="{{ request.user.profile.image.url }}">
     <div class="media-body">
         <div class="article-metadata">
             <div class="d-flex align-content-end flex-wrap" >
                 <div class="p-2 mr-auto">
-                    <a class="mr-2" href="{% url 'profile' request.user.username %}">{{ request.user.username }}</a>
+                    <img class="rounded-circle article-img" src="{{ request.user.profile.image.url }}">
                 </div>
                 <div class="p-2 mr-auto">
-                    <small class="text-muted">Teraz</small>
+                    <a class="mr-2" href="{% url 'profile' request.user.username %}">{{ request.user.username }}</a>
+                    <br>
+                    <small class="text-muted mr-2">teraz</small>
                 </div>
             </div>
         </div>
@@ -32,7 +33,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <button class="btn btn-sample btn-block" type="submit">Dodaj post</button>
+                <button class="btn btn-sample btn-block" type="submit"><span style="font-size:smaller;">Dodaj post</span></button>
             </div>
         </form>
     </div>

@@ -26,7 +26,7 @@ SECRET_KEY = 'cvg$k_0q)gmzg-@#3i2e17i3n$$omxuo)082u9)-3g*rbv3ig7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['moja-witryna.pl', 'localhost', '127.0.0.1', '0.0.0.0:8888', '8aea6d58.ngrok.io']
+ALLOWED_HOSTS = ['moja-witryna.pl', 'localhost', '127.0.0.1', '0.0.0.0:8888', '9b227f3c.ngrok.io']
 
 
 # Application definition
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'market.apps.MarketConfig',
     'messanger_system.apps.MessangerSystemConfig',
     'crispy_forms',
+    'widget_tweaks',
     'django_cleanup',
     'actions.apps.ActionsConfig',
 ]

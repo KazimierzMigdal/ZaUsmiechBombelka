@@ -7,13 +7,24 @@
     <fieldset class="form-group">
         <legend class="d-flex justify-content-center">Nowy Produkt</legend>
                 {{ form.title|as_crispy_field }}
+            <div class="form-inline ml-1 mb-2 mt-2 mr-1">
+                <strong>Poniższe zdjęcie będzie widoczna na stronie głównej marketu {{ form.photo_1|as_crispy_field }}</strong>
+            </div>
+        <div class="form-inline ml-1 mb-2 mt-4 mr-1">
+                Produkt przeznaczony dla {{ form.tag_sex|as_crispy_field }}
+        </div>
         <div class="form-inline ml-1 mb-2 mt-2 mr-1">
-                Produkt przeznaczony dla {{ form.tag_sex|as_crispy_field }} w wieku {{ form.tag_age|as_crispy_field }}
+                w wieku {{ form.tag_age|as_crispy_field }}
         </div>
         <div class="form-row mt-2">
             <div class="form-group col mb-2">
                 {{ form.description|as_crispy_field }}
             </div>
+        </div>
+        <div class="form-inline ml-1 mb-2 mt-2 mr-1">
+                <strong>Poniższe zdjęcia będą widoczna na stronie z detalami produktu</strong>
+                {{ form.photo_2|as_crispy_field }}
+                {{ form.photo_2|as_crispy_field }}
         </div>
         <br>
         <button class="btn btn-sample btn-block" type="submit">Dodaj Produkt</button>
