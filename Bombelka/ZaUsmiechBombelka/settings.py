@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'market.apps.MarketConfig',
     'messanger_system.apps.MessangerSystemConfig',
     'crispy_forms',
-    'widget_tweaks',
     'django_cleanup',
     'actions.apps.ActionsConfig',
 ]
