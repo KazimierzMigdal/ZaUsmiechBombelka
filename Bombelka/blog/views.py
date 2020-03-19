@@ -116,6 +116,29 @@ def user_posts(request, username):
 
     paginator = Paginator(posts, 3)
     page = request.GET.get('page')
+
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        comment_form = CommentForm_2(request.POST)
+        if form.is_valid() and not comment_form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            create_action(request.user, 'dodał post', post)
+            messages.success(request, f'Post został dodany')
+            return redirect('blog-home')
+        elif comment_form.is_valid() and not form.is_valid():
+            comment = comment_form.save(commit=False)
+            post_id = request.POST.get("save_home")
+            comment.author = request.user
+            comment.post = Post.objects.get(pk=post_id)
+            comment.save()
+            create_action(comment.author, 'skomentował', comment.post)
+            messages.success(request, f'Komentarz został dodany')
+    else:
+        form = PostForm()
+        comment_form = CommentForm_2()
+
     try:
         posts = paginator.page(page)
     except PageNotAnInteger:
@@ -123,17 +146,19 @@ def user_posts(request, username):
     except EmptyPage:
         if request.is_ajax():
             return HttpResponse('')
-        posts = paginator.page(paginator.num_pages)
+        images = paginator.page(paginator.num_pages)
     if request.is_ajax():
         return render(request,
                     'blog/list_ajax.html',
                     {'posts': posts,
-                    'section': 'blog'})
-
+                    'section': 'blog',
+                    'comment_form':comment_form})
     return render(request,
                     'blog/home.html',
                     {'posts': posts,
-                    'section': 'blog'})
+                    'section': 'blog',
+                    'form': form,
+                    'comment_form':comment_form})
 
 
 
