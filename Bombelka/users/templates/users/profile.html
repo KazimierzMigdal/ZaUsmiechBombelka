@@ -1,20 +1,20 @@
 {% extends "blog/base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <div class="content-section">
-            <br>
-            <div class="d-flex align-content-start flex-wrap mb-3">
-                <div class="mr-auto p-2">
-                    <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
-                </div>
-                <div class="p-2">
-                    <h1>{{ user.username }}</h1>
-                    <p class="text-secondary">{{ user.email }}</p>
-                    {% if  user.username == request.user.username %}<a class="btn btn-sample btn-block" href="{% url 'profile-editor' %}">Edytuj profil</a>{% endif %}
-                </div>
+<div class="content-section">
+    <div class="media-body">
+        <div class="d-flex align-content-start flex-wrap mb-3">
+            <div class="mr-auto p-2">
+                <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
             </div>
-            <div class="d-flex bd-highlight mb-3">
-                {% with total_followers=user.followers.count %}
+            <div class="p-2">
+                <h1>{{ user.username }}</h1>
+                <p class="text-secondary">{{ user.email }}</p>
+                {% if  user.username == request.user.username %}<a class="btn btn-sample btn-block" href="{% url 'profile-editor' %}">Edytuj profil</a>{% endif %}
+            </div>
+        </div>
+        <div class="d-flex bd-highlight mb-3">
+            {% with total_followers=user.followers.count %}
                 {% if not  user.username == request.user.username %}
                     <div class="mr-auto p-2 bd-highlight">
                         <span class="count">
@@ -30,50 +30,78 @@
                             {% endif %}
                         </a>
                     </div>
-                    {% else %}
+                {% else %}
                     <div class="mr-auto p-2 bd-highlight">
                         <span class="count">
                                 Masz <span class="total">{{ total_followers }}</span> <a href="#">Obserwujący{{ total_followers|pluralize:"ch" }}</a>
                         </span>
                     </div>
                 {% endif %}
-                {% endwith %}
-            </div>
-            <div>
-                <h3>{% if  user.username == request.user.username %}Mój opis:{% else %}O mnie:{% endif %}</h3>
-                <p>Aktualnie poszukuje ubranek <strong>{{user.profile.get_interested_sex_tag_display}}</strong> w wieku <strong>{{user.profile.get_interested_age_tag_display}}</strong>. Dodawane przeze mnie produkty to głównie ubranka przeznaczone <strong>{{user.profile.get_sold_sex_tag_display}}</strong> w wieku <strong>{{user.profile.get_sold_age_tag_display}}</strong></p>
-                <p class="lead">{{ user.profile.description|linebreaks }}</p>
-            </div>
-
-                <h3>{% if  user.username == request.user.username %}Moje przedmioty{% else %}Przedmioty użytkownika {{user.username}}{% endif %}:</h3>
-            <div class="d-flex flex-column bd-highlight mb-3">
-                {% for product  in products %}
-                    <div class="row justify-content-center">
-                        <div class="article-metadata">
-                            <a href="{% url 'product-detail' product.id %}"><img class="img-fluid" alt="Responsive image" src="{{ product.photo_1.url }}"></a>
-                        </div>
-                    </div>
-                {% empty %}
-                    <p class="lead"> Użytkownik {{ user.username}} nie dodał jeszcze żadnego produktu</p>
-                {% endfor %}
-            </div>
-            <a class="btn btn-sample btn-block" href="{% url 'user-products' user.username %}">Zobacz wszystkie</a>
-            <br>
-            <h3>{% if  user.username == request.user.username %}Moje posty{% else %}Posty użytkownika {{user.username}}{% endif %}:</h3>
-            <div class="d-flex flex-column bd-highlight mb-3">
-                {% for post  in posts %}
-                    <div class="p-2 bd-highlight">
-                        <div class="article-metadata">
-                            <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
-                            <p class="article-content">{{ post.content }}</p>
-                        </div>
-                    </div>
-                {% empty %}
-                    <p class="lead"> Użytkownik {{ user.username}} nie dodał jeszcze żadnego postu</p>
-                {% endfor %}
-            </div>
-            <a class="btn btn-sample btn-block" href="{% url 'user-posts' user.username %}">Zobacz wszystkie</a>
+            {% endwith %}
+        </div>
     </div>
+</div>
+
+<div class="content-section">
+    <div class="media-body">
+        <h3>{% if  user.username == request.user.username %}Mój opis:{% else %}O mnie:{% endif %}</h3>
+        <p>Aktualnie poszukuje ubranek <strong>{{user.profile.get_interested_sex_tag_display}}</strong> w wieku <strong>{{user.profile.get_interested_age_tag_display}}</strong>. Dodawane przeze mnie produkty to głównie ubranka przeznaczone <strong>{{user.profile.get_sold_sex_tag_display}}</strong> w wieku <strong>{{user.profile.get_sold_age_tag_display}}</strong></p>
+        <p class="lead">{{ user.profile.description|linebreaks }}</p>
+    </div>
+</div>
+
+<div class="content-section">
+    <div class="media-body">
+        <h3>{% if  user.username == request.user.username %}Moje przedmioty{% else %}Przedmioty użytkownika {{user.username}}{% endif %}:</h3>
+        <div class="d-flex flex-column bd-highlight mb-3">
+            {% for product  in products %}
+                <div class="row justify-content-center">
+                    <div class="article-metadata">
+                        <a href="{% url 'product-detail' product.id %}"><img class="img-fluid" alt="Responsive image" src="{{ product.photo_1.url }}"></a>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="lead"> Użytkownik {{ user.username}} nie dodał jeszcze żadnego produktu</p>
+            {% endfor %}
+        </div>
+        <a class="btn btn-sample btn-block" href="{% url 'user-products' user.username %}">Zobacz wszystkie</a>
+    </div>
+</div>
+
+<div class="content-section">
+    <div class="media-body">
+        <h3>{% if  user.username == request.user.username %}Moje posty{% else %}Posty użytkownika {{user.username}}{% endif %}:</h3>
+        {% for post  in posts %}
+        <article class="media content-section">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <div class="d-flex align-content-end flex-wrap" >
+                        <div class="p-2 mr-auto">
+                            <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
+                        </div>
+                        <div class="p-2 mr-auto">
+                            <a class="mr-2" href="{% url 'profile' post.author.username %}">{{ post.author }}</a>
+                            <br>
+                            <small class="text-muted mr-2">{{ post.date_posted|date:"d F Y" }}</small>
+                        </div>
+                    </div>
+                </div>
+                <h2><a class="article-title" href="{% url 'post-detail' post.id%}">{{ post.title }}</a></h2>
+                <p class="article-content">{{ post.content }}</p>
+                <div class="d-flex align-content-end flex-wrap mt-1" >
+                    <div class="p-2 mr-auto">
+                        <p class="article-content">Komentarze ({{ post.comments.count }})</p>
+                    </div>
+                    <div class="p-2 mr-auto">
+                        <p class="article-content">Polubień ({{ post.users_like.count}})</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+        <a class="btn btn-sample btn-block" href="{% url 'user-posts' user.username %}">Zobacz wszystkie</a>
+    </div>
+</div>
 {% endblock content %}
 
 {% block domready %}

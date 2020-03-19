@@ -35,12 +35,14 @@
 {% for action in actions %}
 {% with user=action.user profile=action.user.profile %}
 <article class="media content-section">
-    <img class="rounded-circle article-img" src="{{ user.profile.image.url }}">
     <div class="media-body">
         <div class="article-metadata">
-            <div class="d-flex align-content-end flex-wrap" >
+            <div class="d-flex align-content-end flex-wrap">
                 <div class="p-2 mr-auto">
-                    <a class="mr-2" href="{% url 'profile' user.username %}">{{ user.username }}</a>
+                    <img class="rounded-circle comment-img" src="{{ user.profile.image.url }}">
+                </div>
+                <div class="p-2 mr-auto">
+                    <small><a class="mr-2" href="{% url 'profile' user.username %}">{{ user.username }}</a></small>
                 </div>
                 <div class="p-2 mr-auto">
                     <small class="text-muted">{{ action.created|timesince}} temu</small>
@@ -48,9 +50,9 @@
             </div>
         </div>
         {% if action.verb == 'zaczął obserwować' %}
-            <h4>{{ action.verb }} <a href="{% url 'profile' action.target %}">{{action.target}}</a></h4>
+            <small>{{ action.verb }}</small> <a href="{% url 'profile' action.target %}">{{action.target}}</a>
         {% else %}
-            <h4>{{ action.verb }} <a href="{{action.target.get_absolute_url}}">{{action.target}}</a></h4>
+            <small>{{ action.verb }}</small> <a href="{{action.target.get_absolute_url}}">{{action.target}}</a>
         {% endif %}
     </div>
 </article>
