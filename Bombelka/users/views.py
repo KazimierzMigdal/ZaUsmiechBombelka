@@ -16,7 +16,11 @@ def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            user.refresh_from_db()
+            user.profile.interested_sex_tag = form.cleaned_data.get('interested_sex_tag')
+            user.profile.interested_age_tag = form.cleaned_data.get('interested_age_tag')
+            user.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}! You are able to log in!')
             return redirect('login')

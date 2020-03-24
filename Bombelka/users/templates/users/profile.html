@@ -64,7 +64,7 @@
                 <p class="lead"> Użytkownik {{ user.username}} nie dodał jeszcze żadnego produktu</p>
             {% endfor %}
         </div>
-        <a class="btn btn-sample btn-block" href="{% url 'user-products' user.username %}">Zobacz wszystkie</a>
+        {% if  products %}<a class="btn btn-sample btn-block" href="{% url 'user-products' user.username %}">Zobacz wszystkie</a>{% endif %}
     </div>
 </div>
 
@@ -98,8 +98,10 @@
                 </div>
             </div>
         </article>
+        {% empty %}
+                <p class="lead"> Użytkownik {{ user.username}} nie dodał jeszcze żadnego postu</p>
         {% endfor %}
-        <a class="btn btn-sample btn-block" href="{% url 'user-posts' user.username %}">Zobacz wszystkie</a>
+        {% if posts %}<a class="btn btn-sample btn-block" href="{% url 'user-posts' user.username %}">Zobacz wszystkie</a>{% endif %}
     </div>
 </div>
 {% endblock content %}

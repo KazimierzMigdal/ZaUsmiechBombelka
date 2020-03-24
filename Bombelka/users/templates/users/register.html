@@ -1,20 +1,52 @@
 {% extends "blog/base.html" %}
 {% load crispy_forms_tags%}
 {% block content %}
-    <div class="content-section">
-        <form method="POST"  class="d-flex justify-content-center">
+<div class="content-section">
+    <div class="d-flex justify-content-center">
+        <form method="POST" enctype="multipart/form-data">
+            <legend class="d-flex justify-content-center"> Dołącz Dziś</legend>
             {% csrf_token %}
-            <fieldset>
-                <legend class="d-flex justify-content-center"> Dołącz Dziś</legend>
-                    {{ form|crispy }}
-                <br>
-                <button class="btn btn-sample btn-block" type="submit">Zapisz</button>
-            </fieldset>
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="form-group col mb-2">
+                        {{ form.username|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col mb-2">
+                        {{ form.email|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col mb-2">
+                        {{ form.password1|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col mb-2">
+                        {{ form.password2|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col mb-2">
+                        <p>Poszukuję ubranek:</p>
+                        {{ form.interested_sex_tag|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-inline ml-1 mb-4 mt-1 mr-1">
+                        w wieku {{ form.interested_age_tag|as_crispy_field }}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-sample btn-block" type="submit"><span style="font-size:smaller;">Zapisz</span></button>
+            </div>
+            <div class="d-flex justify-content-center">
+                <small class="text-muted"> Masz już konto?<a class="ml-2" href="{% url 'login' %}">Zaloguj się</a></small>
+            </div>
         </form>
-        <br>
-        <div class="d-flex justify-content-center">
-            <small class="text-muted"> Masz już konto?<a class="ml-2" href="{% url 'login' %}">Zaloguj się</a></small>
-        </div>
     </div>
+</div>
 {% endblock content %}
 

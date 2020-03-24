@@ -32,11 +32,11 @@
       <div class="d-flex bd-highlight" >
         <div class="mr-auto p-2 bd-highlight">
           <span class="count">
-            <span style="font-size:smaller;">Polubień: <span class="total">{{ post.users_like.count}}</span> </span>
+            <span style="font-size:smaller;">Polubień: <span class="total">{{ post.users_like.count}}</span></span>
           </span>
         </div>
         <div class="p-2 bd-highlight">
-           <a href="#" data-id="{{ object.id }}"  data-action="{% if request.user in object.users_like.all %}un{% endif %}like" class=" btn btn-sample like button">
+           <a href="#" data-id="{{ object.id }}" value="{{post.id}}" data-action="{% if request.user in object.users_like.all %}un{% endif %}like" class=" btn btn-sample like button">
               <span style="font-size:smaller;">{% if request.user not in object.users_like.all %}
                 Like
                 {% else %}
@@ -103,3 +103,4 @@
 </div>
 </article>
 {% endfor %}
+
