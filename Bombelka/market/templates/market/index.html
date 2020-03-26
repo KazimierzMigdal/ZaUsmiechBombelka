@@ -6,7 +6,6 @@
 
 {% for product in products %}
 <article class="media content-section">
-    <!-- <img class="rounded-circle article-img" src="{{ product.author.profile.image.url }}"> -->
     <div class="media-body">
         <div class="article-metadata">
             <div class="d-flex align-content-end flex-wrap" >
@@ -32,6 +31,7 @@
         </div>
         <br>
         <h2><a class="article-title" href="{% url 'product-detail' product.id %}">{{ product.title }}</a></h2>
+        <p class="text-muted">{{product.price}} PLN</p>
          <div class = "row justify-content-center">
             <img class="img-fluid" alt="Responsive image" src="{{ product.photo_1.url }}">
         </div>

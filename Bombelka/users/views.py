@@ -1,16 +1,19 @@
+from .forms import (UserRegisterForm,
+                    UserUpdateForm,
+                    ProfileUpdateForm)
+from .models import Contact
+from actions.utils import create_action
+from blog.models import Post
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.http import JsonResponse
 from django.shortcuts import (render,
                             redirect,
                             get_object_or_404)
-from django.contrib import messages
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
-from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from django.http import JsonResponse
-from blog.models import Post
 from market.models import Product
-from django.contrib.auth.models import User
-from .models import Contact
-from actions.utils import create_action
+
 
 def register(request):
     if request.method == 'POST':
@@ -28,21 +31,21 @@ def register(request):
         form = UserRegisterForm()
     return render(request,'users/register.html', {'form': form})
 
+
 @login_required
 def profile(request, username):
     user = get_object_or_404(User,
-                username=username,
-                is_active=True)
-
+                            username=username,
+                            is_active=True)
     posts = Post.objects.filter(author=user).order_by('-date_posted')[:3]
     products = Product.objects.filter(author=user).order_by('-date_posted')[:3]
-
     context = {
         'posts': posts,
         'products': products,
         'user': user,
     }
     return render(request, 'users/profile.html', context)
+
 
 @login_required
 def profile_editor(request):
@@ -65,12 +68,10 @@ def profile_editor(request):
     else:
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=request.user.profile)
-
     context = {
         'u_form': u_form,
         'p_form': p_form,
     }
-
     return render(request, 'users/profile_editor.html', context)
 
 

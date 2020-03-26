@@ -3,6 +3,8 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from PIL import Image
 from django.urls import reverse
+from django.core.validators import MinValueValidator
+from decimal import Decimal
 
 
 class Product(models.Model):
@@ -16,33 +18,18 @@ class Product(models.Model):
     photo_2 = models.ImageField(default='default_1.jpg', upload_to='product_pics', verbose_name='')
     photo_3 = models.ImageField(default='default_1.jpg', upload_to='product_pics', verbose_name='')
 
-    SEX_TAG_CHOISE= [('Boy','Chłopca'),('Girl', 'Dziewczynki'), ('Unisex', 'Zarówno dla chłopca jaki i dziewczynki')]
+    SEX_TAG_CHOISE = [('Boy','Chłopca'),('Girl', 'Dziewczynki'), ('Unisex', 'Zarówno dla chłopca jaki i dziewczynki')]
+    AGE_TAG_CHOISE = [(1,'< 1 miesiąc'),(2,'< 3 miesiące'),(3,'< 6 miesięcy'),(4,'< 1 rok'),(5,'< 1.5 roku'),(6,'< 2 lata'),(7,'Ponad 2 lata')]
 
     tag_sex = models.CharField(max_length=6, choices = SEX_TAG_CHOISE, default='Unisex', verbose_name='')
+    tag_age = models.IntegerField(choices = AGE_TAG_CHOISE, default=1, verbose_name='')
 
-    tag_age = models.IntegerField(choices = [(1,'< 1 miesiąc'),
-                                            (2,'< 3 miesiące'),
-                                            (3,'< 6 miesięcy'),
-                                            (4,'< 1 rok'),
-                                            (5,'< 1.5 roku'),
-                                            (6,'< 2 lata'),
-                                            (7,'Ponad 2 lata')],
-                                                                 default=1, verbose_name='')
+    price = models.DecimalField(decimal_places=2, max_digits=12, validators=[MinValueValidator(Decimal('0.00'))])
 
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
         return reverse('product-detail', kwargs={'pk': self.pk})
-
-    # def save(self, *args, **kwargs):
-    #         super().save(*args, **kwargs)
-
-    #         img = Image.open(self.photo_1.path)
-
-    #         if img.height > 300 or img.width > 300:
-    #             output_size = (300,300)
-    #             img.thumbnail(output_size)
-    #             img.save(self.photo_1.path)
 
 

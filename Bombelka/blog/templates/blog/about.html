@@ -1,11 +1,11 @@
 {% extends "blog/base.html" %}
 {% block content %}
     <h1>Dowiedź się o nas więcej</h1>
-    {% for Descriptione in Descriptiones%}
-        <h2>{{ Descriptione.title }}</h2>
-        <button class="btn btn-outline-info btn-block" onclick="toggle_div_fun('{{ Descriptione.id }}');">Rozwiń odpowiedź</button>
-        <div id="{{ Descriptione.id }}">
-            <p>{{ Descriptione.content }}</p>
+    {% for descriptione in descriptiones%}
+        <h2>{{ descriptione.title }}</h2>
+        <button class="btn btn-outline-info btn-block" onclick="toggle_div_fun('{{ descriptione.id }}');">Rozwiń odpowiedź</button>
+        <div id="{{ descriptione.id }}">
+            <p>{{ descriptione.content }}</p>
         </div>
     {% endfor %}
 {% endblock content %}

@@ -1,31 +1,31 @@
-from django.shortcuts import (render,
-                            redirect,
-                            get_object_or_404)
-from django.contrib.auth.mixins import (LoginRequiredMixin,
-                                        UserPassesTestMixin)
-from django.views.generic.edit import FormMixin
+from .forms import (PostForm,
+                    CommentForm,
+                    CommentForm_2)
 from .models import (Post,
                     Descriptione,
                     Comment)
-from .forms import PostForm
-from django.contrib.auth.models import User
+from actions.utils import create_action
+from django import forms
+from django.core.paginator import (Paginator,
+                                EmptyPage,
+                                PageNotAnInteger)
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import User
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import (render,
+                            redirect,
+                            get_object_or_404)
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.views.generic import (ListView,
                                 DetailView,
                                 CreateView,
                                 UpdateView,
                                 DeleteView)
+from django.views.generic.edit import FormMixin
 
-from django.core.paginator import (Paginator,
-                                EmptyPage,
-                                PageNotAnInteger)
-from django.http import JsonResponse, HttpResponse
-from django import forms
-from django.contrib import messages
-from actions.utils import create_action
-from .forms import CommentForm, CommentForm_2
-from django.urls import reverse
 
 
 @login_required
@@ -70,12 +70,14 @@ def home(request):
                     {'posts': posts,
                     'section': 'blog',
                     'comment_form':comment_form})
+
     return render(request,
                     'blog/home.html',
                     {'posts': posts,
                     'section': 'blog',
                     'form': form,
                     'comment_form':comment_form})
+
 
 class PostDetailView(FormMixin, DetailView):
     model = Post
@@ -107,13 +109,13 @@ class PostDetailView(FormMixin, DetailView):
         form.save()
         return super(PostDetailView, self).form_valid(form)
 
+
 @login_required
 def user_posts(request, username):
     user = get_object_or_404(User,
                 username=username,
                 is_active=True)
     posts = Post.objects.filter(author=user).order_by('-date_posted')
-
     paginator = Paginator(posts, 3)
     page = request.GET.get('page')
 
@@ -153,14 +155,13 @@ def user_posts(request, username):
                     {'posts': posts,
                     'section': 'blog',
                     'comment_form':comment_form})
+
     return render(request,
                     'blog/home.html',
                     {'posts': posts,
                     'section': 'blog',
                     'form': form,
                     'comment_form':comment_form})
-
-
 
 
 class PostCreateView(LoginRequiredMixin,CreateView):
@@ -214,9 +215,11 @@ class PostDeleteView(LoginRequiredMixin,UserPassesTestMixin,DeleteView):
 
 
 def about(request):
-    context = { 'title': 'About',
-                'Descriptiones': Descriptione.objects.all()
+    descriptione = Descriptione.objects.all()
+    context = {'title': 'About',
+                'Descriptiones': descriptione
                 }
+
     return render(request, 'blog/about.html', context)
 
 
@@ -243,12 +246,12 @@ class CommentCreateView(LoginRequiredMixin,CreateView):
         form.fields['text'].widget = forms.Textarea(attrs={"rows":"6", "class":"form-control"})
         return form
 
+
 @login_required
 @require_POST
 def post_like(request):
     post_id = request.POST.get('id')
     action = request.POST.get('action')
-    print(post_id)
     if post_id and action:
         try:
             post = Post.objects.get(id=post_id)
@@ -266,7 +269,6 @@ def post_like(request):
 @require_POST
 def image_like(request):
     image_id = request.POST.get('id')
-    print(image_id)
     action = request.POST.get('action')
     if image_id and action:
         try:
