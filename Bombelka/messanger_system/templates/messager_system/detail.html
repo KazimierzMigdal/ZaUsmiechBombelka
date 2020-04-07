@@ -1,0 +1,69 @@
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags%}
+{% block content %}
+<h1><a href="{% url 'product-detail' product.id %}">{{ message.subject }}</a></h1>
+<h6>Z
+    {% if message.sender == request.user%}
+        <a class="mr-2" href="{% url 'profile' message.recipient.username %}">{{ message.recipient }}</a>
+    {% else %}
+        <a class="mr-2" href="{% url 'profile' message.sender.username %}">{{ message.sender }}</a>
+    {% endif %}
+</h6>
+
+<div class="sticky-top">
+{% if product.sold is False or message.sender == product.author or  message.recipient == product.sold_for %}
+    <article class="media content-section">
+        <div class="media-body">
+            <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="form-group col mb-2">
+                            {{ form.text|as_crispy_field }}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-sample btn-block" type="submit"><span style="font-size:smaller;">Wyślij wiadomość</span></button>
+                </div>
+            </form>
+        </div>
+    </article>
+{% else %}
+    <div class="alert alert-success">
+        <p>Produkt został sprzedany</p>
+    </div>
+{% endif %}
+</div>
+
+<div id="messages-list">
+    {% include "messager_system/list_ajax.html" %}
+</div>
+
+{% endblock content %}
+
+
+{% block domready %}
+    var page = 1;
+    var empty_page = false;
+    var block_request = false;
+
+    $(window).scroll(function() {
+        var margin = $(document).height() - $(window).height() - 200;
+        if  ($(window).scrollTop() > margin && empty_page == false && block_request == false) {
+            block_request = true;
+            page += 1;
+            $.get('?page=' + page, function(data) {
+                if(data == '')
+                {
+                    empty_page = true;
+                }
+                else {
+                    block_request = false;
+                    $('#messages-list').append(data);
+                }
+            });
+        }
+    });
+
+{% endblock domready %}

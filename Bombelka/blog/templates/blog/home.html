@@ -41,9 +41,10 @@
 </div>
 </div>
 
-    <div id="post-list">
-        {% include "blog/list_ajax.html" %}
-    </div>
+<div id="post-list">
+    {% include "blog/list_ajax.html" %}
+</div>
+
 {% endblock content %}
 
 {% block domready %}
@@ -69,29 +70,28 @@
         }
     });
 
- $('a.like').click(function(e){
-    e.preventDefault();
-    $.post('{% url "like" %}',
-      {
-        id: $(this).data('id'),
-        action: $(this).data('action')
-      },
-      function(data){
-        if (data['status'] == 'ok')
+    $('.like').click(function(e){
+        e.stopImmediatePropagation();
+        var catid;
+        var action;
+        catid = $(this).attr("data-catid");
+        action = $(this).attr("data-action");
+        $.post('{% url "likepost" %}',
         {
-          var previous_action = $('a.like').data('action');
-
-          // toggle data-action
-          $('a.like').data('action', previous_action == 'like' ? 'unlike' : 'like');
-          // toggle link text
-          $('a.like').text(previous_action == 'like' ? 'Unlike' : 'Like');
-
-          // update total likes
-          var previous_likes = parseInt($('span.count .total').text());
-          $('span.count .total').text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+          post_id: catid,
+          action: action
+        },
+        function(data){
+          if (data['status'] == 'ok'){
+            var previous_action = $('#like'+ catid).data('action');
+            var previous_likes = parseInt($('#total' + catid).text());
+            $('#like'+ catid).attr("data-action", previous_action == 'like' ? 'unlike' : 'like')
+            $('#like'+ catid).data("action", previous_action == 'like' ? 'unlike' : 'like')
+            $('#like'+ catid).text(previous_action == 'like' ? 'unlike' : 'like');
+            $('#total' + catid).text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+          }
         }
-      }
-    );
-  });
+        );
+      })
 
 {% endblock %}

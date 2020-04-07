@@ -13,12 +13,11 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col mb-2">
+                    <div class="form-group col ">
                         {{ form.password|as_crispy_field }}
+                        <a href="{% url 'password_reset' %}"class="float-right"><small>Zapomniałeś hasła?</small></a>
                     </div>
                 </div>
-            </div>
-            <div class="form-group">
                 <button class="btn btn-sample btn-block" type="submit"><span style="font-size:smaller;">Zaloguj się </span></button>
             </div>
             <div class="d-flex justify-content-center">
@@ -27,20 +26,4 @@
         </form>
     </div>
 </div>
-    <!-- <div class="content-section">
-        <form method="POST" class="d-flex justify-content-center">
-            {% csrf_token %}
-            <fieldset>
-                <legend class="d-flex justify-content-center"> Zaloguj Się</legend>
-                    {{ form.username|as_crispy_field }}
-                    {{ form.password|as_crispy_field }}
-                <br>
-                <button class="btn btn-sample btn-block" type="submit">Zaloguj</button>
-            </fieldset>
-        </form>
-        <br>
-        <div class="d-flex justify-content-center">
-            <small class="text-muted"> Nie masz jeszcze konto?<a class="ml-2" href="{% url 'register' %}">Zapisz się teraz</a></small>
-        </div>
-    </div> -->
 {% endblock content %}

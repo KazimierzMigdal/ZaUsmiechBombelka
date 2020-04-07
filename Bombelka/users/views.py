@@ -4,7 +4,9 @@ from .forms import (UserRegisterForm,
 from .models import Contact
 from actions.utils import create_action
 from blog.models import Post
+from django import forms
 from django.contrib import messages
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import JsonResponse
@@ -94,3 +96,26 @@ def user_follow(request):
         except User.DoesNotExist:
             return JsonResponse({'status': 'ko'})
     return JsonResponse({'status': 'ko'})
+
+
+class MyPasswordResetView(PasswordResetView):
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
+        form = super(MyPasswordResetView, self).get_form(form_class)
+        form.fields['email'].widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email'})
+        form.fields['email'].lable = ''
+        return form
+
+class MyPasswordResetConfirmView(PasswordResetConfirmView):
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
+        form = super(MyPasswordResetConfirmView, self).get_form(form_class)
+        form.fields['new_password1'].widget = forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'New password'})
+        form.fields['new_password1'].label = False
+        form.fields['new_password1'].help_text = None
+        form.fields['new_password2'].widget = forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password confirmation'})
+        form.fields['new_password2'].label = False
+        form.fields['new_password2'].help_text = None
+        return form

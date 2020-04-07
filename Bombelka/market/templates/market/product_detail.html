@@ -52,7 +52,16 @@
             <img class="img-fluid mb-2 mt-2" src="{{ object.photo_3.url }}">
             </div>
         </div>
-        <a class="mr-2" href="{% url 'market-home' %}"><button class="btn btn-sample btn-block">Wróć do marketu</button></a>
+        {% if object.author is user and object.sold is False %}
+            <a href="{% url 'product-sold' product.pk%}"><button class="btn btn-sample btn-block">Ustaw jako sprzedane</button></a>
+        {% elif object.author is not user and object.sold is False %}
+            <a href="{% url 'messages_compose' product.pk%}"><button class="btn btn-sample btn-block">Skontaktuj się by kupić</button></a>
+        {% else %}
+            <div class="alert alert-success">
+                <p>Produkt został sprzedany</p>
+            </div>
+        {% endif %}
+        <a class="mr-2" href="{% url 'market-home' %}"><button class="btn btn-sample btn-block mt-2">Wróć do marketu</button></a>
     </div>
 </article>
 {% endblock content %}

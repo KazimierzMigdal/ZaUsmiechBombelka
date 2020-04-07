@@ -1,0 +1,52 @@
+{% for message in all_messages_in_conversation %}
+    {% if message.sender == request.user %}
+        <article class="media content-section">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <div class="d-flex align-content-end flex-wrap">
+                        <div class="p-2 mr-auto">
+                            <img class="rounded-circle comment-img" src="{{ message.sender.profile.image.url }}">
+                        </div>
+                        <div class="p-2 mr-auto">
+                            <small><a class="mr-2" href="{% url 'profile' message.sender.username %}">{{ message.sender }}</a></small>
+                        </div>
+                        <div class="p-2 mr-auto">
+                            <small class="text-muted">{{ message.sent_at|date:'d b h:i' }}</small>
+                        </div>
+                        <div class="p-2 mr-auto">
+                            <a class="btn btn-danger btn-sm float-right" href="{% url 'message_delete' message.id%}"><span style="font-size:smaller;">Usuń</span></a>
+                        </div>
+                    </div>
+                </div>
+                {% if message.deleted == True %}
+                    <small  class="float-sm-left" >Wiadomość usunięta</small>
+                {% else %}
+                    <small  class="float-sm-left" >{{ message.text|linebreaks }}</small>
+                {% endif %}
+            </div>
+        </article>
+    {% else %}
+        <article class="media content-section">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <div class="d-flex align-content-end flex-wrap">
+                        <div class="p-2 ml-auto">
+                            <small class="text-muted">{{ message.sent_at|date:'d b h:i' }}</small>
+                        </div>
+                        <div class="p-2 ml-auto">
+                            <small><a class="mr-2" href="{% url 'profile' message.sender.username %}">{{ message.sender }}</a></small>
+                        </div>
+                        <div class="p-2 ml-auto">
+                            <img class="rounded-circle comment-img" src="{{ message.sender.profile.image.url }}">
+                        </div>
+                    </div>
+                </div>
+                {% if message.deleted == True %}
+                    <small  class="float-sm-right" >Wiadomość usunięta</small>
+                {% else %}
+                    <small  class="float-sm-right" >{{ message.text|linebreaks }}</small>
+                {% endif %}
+            </div>
+        </article>
+    {% endif %}
+{% endfor %}

@@ -4,45 +4,32 @@
     <a class="mr-2" href="{% url 'product-create' %}"><button class="btn btn-sample btn-block">Dodaj produkt</button></a>
 </div>
 
-{% for product in products %}
-<article class="media content-section">
-    <div class="media-body">
-        <div class="article-metadata">
-            <div class="d-flex align-content-end flex-wrap" >
-                <div class="p-2 mr-auto">
-                    <img class="rounded-circle article-img" src="{{ product.author.profile.image.url }}">
-                </div>
-                <div class="p-2 mr-auto">
-                    <a class="mr-2" href="{% url 'profile' product.author %}">{{ product.author }}</a>
-                    <br>
-                    <small class="text-muted mr-2">{{ product.date_posted|date:"d F Y" }}</small>
-                </div>
-            </div>
-            {% if product.author == user %}
-            <div class="d-flex bd-highlight" >
-                <div class="mr-auto p-2 bd-highlight">
-                    <a class="btn btn-danger btn-sm float-right" href="{% url 'product-delete' product.id%}"><span style="font-size:smaller;">Usuń</span></a>
-                </div>
-                <div class="p-2 bd-highlight">
-                    <a class="btn btn-sample btn-sm float-right mr-2" href="{% url 'product-update' product.id%}"><span style="font-size:smaller;">Popraw</span></a>
-                </div>
-            </div>
-            {% endif %}
-        </div>
-        <br>
-        <h2><a class="article-title" href="{% url 'product-detail' product.id %}">{{ product.title }}</a></h2>
-        <p class="text-muted">{{product.price}} PLN</p>
-         <div class = "row justify-content-center">
-            <img class="img-fluid" alt="Responsive image" src="{{ product.photo_1.url }}">
-        </div>
-        <br>
-        {% if product.author == user %}
-            <button class="btn btn-sample btn-block">Ustaw jako sprzedane</button>
-        {% else %}
-            <button class="btn btn-sample btn-block">Skontaktuj się by kupić</button>
-        {% endif %}
-    </div>
-</article>
-{% endfor %}
+<div id="product-list">
+    {% include 'market/list_ajax.html' %}
+</div>
 {% endblock content %}
 
+{% block domready %}
+    var page = 1;
+    var empty_page = false;
+    var block_request = false;
+
+    $(window).scroll(function() {
+        var margin = $(document).height() - $(window).height() - 200;
+        if  ($(window).scrollTop() > margin && empty_page == false && block_request == false) {
+            block_request = true;
+            page += 1;
+            $.get('?page=' + page, function(data) {
+                if(data == '')
+                {
+                    empty_page = true;
+                }
+                else {
+                    block_request = false;
+                    $('#product-list').append(data);
+                }
+            });
+        }
+    });
+
+{% endblock %}

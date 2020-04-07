@@ -1,1 +1,42 @@
-<h1>Hello</h1>
+{% extends "blog/base.html" %}
+{% block content %}
+
+<article class="media content-section">
+    <div class="media-body">
+    <h5>Moje konwersacje</h5>
+    {% for message in user_messages%}
+        <article class="media content-section">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <div class="d-flex align-content-end flex-wrap">
+                        {% if message.sender != request.user %}
+                        <div class="p-2 mr-auto">
+                            <img class="rounded-circle comment-img" src="{{ message.sender.profile.image.url }}">
+                        </div>
+                        <div class="p-2 mr-auto">
+                            <small><a class="mr-2" href="{% url 'profile' message.sender.username %}">{{ message.sender.username }}</a></small>
+                        </div>
+                            {% if message.new == True %}
+                                <div class="p-2 mr-auto">
+                                <small>Nowa</small>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                        <div class="p-2 mr-auto">
+                            <img class="rounded-circle comment-img" src="{{ message.recipient.profile.image.url }}">
+                        </div>
+                        <div class="p-2 mr-auto">
+                            <small><a class="mr-2" href="{% url 'profile' message.recipient.username %}">{{ message.recipient.username }}</a></small>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                    <a href="{% url 'messages_detail' message.id%}">{{ message.subject }}</a>
+            </div>
+        </article>
+    {% empty %}
+        <p>Nie masz żadnych konwersacji. Znajdź interesujący cię produkt i skontaktuj się z sprzedającym.</p>
+    {% endfor %}
+    </div>
+</article>
+{% endblock content %}

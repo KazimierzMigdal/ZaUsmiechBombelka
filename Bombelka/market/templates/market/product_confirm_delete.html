@@ -5,8 +5,8 @@
             {% csrf_token %}
             <fieldset  class="d-flex justify-content-centerk">
                 <h2>Czy chcesz usunąć  produkt z tytułem <i>{{object.title}}</i>?</h2>
-                <button class="btn btn-danger btn-block" type="submit">Tak, usuń</button>
-                <a href="{% url 'product-detail' object.id %}"><button class="btn btn-sample btn-block" href="{% url 'product-detail' object.id %}">Nie, porzuć zmiany</button></a>
+                <button class="btn btn-danger btn-block mt-1 mb-1" type="submit">Tak, usuń</button>
+                <a class="btn btn-sample btn-block mt-1 mb-1" href="{% url 'product-detail' object.id %}">Nie, porzuć zmiany</a>
                 <br>
             </fieldset>
         </form>

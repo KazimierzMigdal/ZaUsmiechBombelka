@@ -9,33 +9,34 @@
             <div class="form-group">
                 <div class="form-row">
                     <div class="form-group col mb-2">
-                        {{ form.username|as_crispy_field }}
+                        {{ form.username }}
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col mb-2">
-                        {{ form.email|as_crispy_field }}
+                        {{ form.email }}
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col mb-2">
-                        {{ form.password1|as_crispy_field }}
+                        {{ form.password1 }}
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col mb-2">
-                        {{ form.password2|as_crispy_field }}
+                        {{ form.password2 }}
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col mb-2">
-                        <p>Poszukuję ubranek:</p>
-                        {{ form.interested_sex_tag|as_crispy_field }}
+                        <p><strong>Poszukuję ubranek:</strong></p>
+                        {{ form.interested_sex_tag}}
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-inline ml-1 mb-4 mt-1 mr-1">
-                        w wieku {{ form.interested_age_tag|as_crispy_field }}
+                    <div class="form-group col mb-2">
+                        <p><strong>w wieku:</strong></p>
+                        {{ form.interested_age_tag }}
                     </div>
                 </div>
             </div>

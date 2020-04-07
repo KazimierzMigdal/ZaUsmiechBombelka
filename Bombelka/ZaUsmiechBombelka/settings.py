@@ -26,7 +26,7 @@ SECRET_KEY = 'cvg$k_0q)gmzg-@#3i2e17i3n$$omxuo)082u9)-3g*rbv3ig7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['moja-witryna.pl', 'localhost', '127.0.0.1', '0.0.0.0:8888', '8823a879.ngrok.io']
+ALLOWED_HOSTS = ['moja-witryna.pl', 'localhost', '127.0.0.1', '0.0.0.0:8888', 'ecc898cd.ngrok.io']
 
 
 # Application definition
@@ -145,3 +145,10 @@ ABSOLUTE_URL_OVERRIDES = {
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 REDIS_DB = 0
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'migdal.kazimierz@gmail.com'
+EMAIL_HOST_PASSWORD = 'qzddpajppzjfjiii'

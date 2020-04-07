@@ -31,20 +31,17 @@
       <div class="d-flex bd-highlight" >
         <div class="mr-auto p-2 bd-highlight">
           <span class="count">
-            <span style="font-size:smaller;">Polubień: <span class="total">{{ post.users_like.count}}</span></span>
+            <span style="font-size:smaller;">Polubień: <span class="total" id="total{{object.id}}">{{ object.users_like.count}}</span></span>
           </span>
         </div>
         <div class="p-2 bd-highlight">
-           <a href="#" data-id="{{ object.id }}"  data-action="{% if request.user in object.users_like.all %}un{% endif %}like" class=" btn btn-sample like button">
-              <span style="font-size:smaller;">{% if request.user not in object.users_like.all %}
+          <a class=" btn btn-sample like button" id="like{{object.id}}" href="#" data-catid="{{ object.id }}"  data-action="{% if request.user in object.users_like.all %}un{% endif %}like">{% if request.user not in object.users_like.all %}
                 Like
                 {% else %}
                   Unlike
-                {% endif %}
-              </span>
-          </a>
+                {% endif %}</a>
         </div>
-      </div>
+    </div>
   </div>
 </article>
 
@@ -107,30 +104,3 @@
 </div>
 {% endblock content %}
 
-{% block domready %}
-    $('a.like').click(function(e){
-    e.preventDefault();
-    $.post('{% url "like" %}',
-      {
-        id: $(this).data('id'),
-        action: $(this).data('action')
-      },
-      function(data){
-        if (data['status'] == 'ok')
-        {
-          var previous_action = $('a.like').data('action');
-
-          // toggle data-action
-          $('a.like').data('action', previous_action == 'like' ? 'unlike' : 'like');
-          // toggle link text
-          $('a.like').text(previous_action == 'like' ? 'Unlike' : 'Like');
-
-          // update total likes
-          var previous_likes = parseInt($('span.count .total').text());
-          $('span.count .total').text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
-        }
-      }
-    );
-  });
-
-{% endblock %}

@@ -20,11 +20,20 @@ class MyAuthForm(AuthenticationForm):
         self.fields['password'].widget = forms.PasswordInput(attrs={'class': 'form-control', 'placeholder':'Password'})
         self.fields['password'].label = False
 
+class MyResetForm(AuthenticationForm):
+    class Meta:
+        model = User
+        fields = ['email']
+
+    def __init__(self, *args, **kwargs):
+        super(MyResetForm, self).__init__(*args, **kwargs)
+        self.fields['email'].widget = forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email'})
+        self.fields['email'].label = False
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True, widget=forms.TextInput(attrs={'placeholder': 'Email', 'class': 'form-control'}))
-    interested_sex_tag = forms.ChoiceField(widget=forms.Select(attrs={'class':"form-control-sm mx-sm-1"}),label='', choices=SEX_TAG_CHOISE)
-    interested_age_tag = forms.ChoiceField(widget=forms.Select(attrs={'class':"form-control-sm mx-sm-1"}),label='', choices=AGE_TAG_CHOISE)
+    interested_sex_tag = forms.ChoiceField(widget=forms.Select(attrs={'class':"form-control"}),label='', choices=SEX_TAG_CHOISE)
+    interested_age_tag = forms.ChoiceField(widget=forms.Select(attrs={'class':"form-control"}),label='', choices=AGE_TAG_CHOISE)
 
     class Meta:
         model = User

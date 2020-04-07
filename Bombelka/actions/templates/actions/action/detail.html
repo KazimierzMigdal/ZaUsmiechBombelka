@@ -30,36 +30,35 @@
 
 <article class="media content-section">
     <div class="media-body">
-    <h5>Aktualności</h5>
-    {% for action in actions %}
-        {% with user=action.user profile=action.user.profile %}
-        <article class="media content-section">
-            <div class="media-body">
-                <div class="article-metadata">
-                    <div class="d-flex align-content-end flex-wrap">
-                        <div class="p-2 mr-auto">
-                            <img class="rounded-circle comment-img" src="{{ user.profile.image.url }}">
-                        </div>
-                        <div class="p-2 mr-auto">
-                            <small><a class="mr-2" href="{% url 'profile' user.username %}">{{ user.username }}</a></small>
-                        </div>
-                        <div class="p-2 mr-auto">
-                            <small class="text-muted">{{ action.created|timesince}} temu</small>
-                        </div>
-                    </div>
-                </div>
-                {% if action.verb == 'zaczął obserwować' %}
-                    <small>{{ action.verb }}</small> <a href="{% url 'profile' action.target %}">{{action.target}}</a>
-                {% else %}
-                    <small>{{ action.verb }}</small> <a href="{{action.target.get_absolute_url}}">{{action.target}}</a>
-                {% endif %}
+        <h5>Aktualności</h5>
+            <div id="action-list">
+                {% include "actions/action/list_ajax.html" %}
             </div>
-        </article>
-        {% endwith %}
-    {% empty %}
-    <p>Dodawaj użytkowników do obserwoawanych by widzieć ich aktywność w ZaUsmiechBombelka</p>
-    {% endfor %}
     </div>
 </article>
 
+{% endblock %}
+
+{% block domready %}
+    var page = 1;
+    var empty_page = false;
+    var block_request = false;
+
+    $(window).scroll(function() {
+        var margin = $(document).height() - $(window).height() - 200;
+        if  ($(window).scrollTop() > margin && empty_page == false && block_request == false) {
+            block_request = true;
+            page += 1;
+            $.get('?page=' + page, function(data) {
+                if(data == '')
+                {
+                    empty_page = true;
+                }
+                else {
+                    block_request = false;
+                    $('#action-list').append(data);
+                }
+            });
+        }
+    });
 {% endblock %}

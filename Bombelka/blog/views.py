@@ -1,6 +1,4 @@
-from .forms import (PostForm,
-                    CommentForm,
-                    CommentForm_2)
+from .forms import PostForm,CommentForm
 from .models import (Post,
                     Descriptione,
                     Comment)
@@ -30,13 +28,9 @@ from django.views.generic.edit import FormMixin
 
 @login_required
 def home(request):
-    posts = Post.objects.all().order_by('-date_posted')
-    paginator = Paginator(posts, 3)
-    page = request.GET.get('page')
-
     if request.method == 'POST':
         form = PostForm(request.POST)
-        comment_form = CommentForm_2(request.POST)
+        comment_form = CommentForm(request.POST)
         if form.is_valid() and not comment_form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
@@ -54,8 +48,12 @@ def home(request):
             messages.success(request, f'Komentarz został dodany')
     else:
         form = PostForm()
-        comment_form = CommentForm_2()
+        comment_form = CommentForm()
 
+    #pagination
+    posts = Post.objects.all().order_by('-date_posted')
+    paginator = Paginator(posts, 3)
+    page = request.GET.get('page')
     try:
         posts = paginator.page(page)
     except PageNotAnInteger:
@@ -89,7 +87,6 @@ class PostDetailView(FormMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(PostDetailView, self).get_context_data(**kwargs)
         context['section'] = 'blog'
-        context['cos'] = self.object.id
         context['form'] = CommentForm()
         return context
 
@@ -112,16 +109,9 @@ class PostDetailView(FormMixin, DetailView):
 
 @login_required
 def user_posts(request, username):
-    user = get_object_or_404(User,
-                username=username,
-                is_active=True)
-    posts = Post.objects.filter(author=user).order_by('-date_posted')
-    paginator = Paginator(posts, 3)
-    page = request.GET.get('page')
-
     if request.method == 'POST':
         form = PostForm(request.POST)
-        comment_form = CommentForm_2(request.POST)
+        comment_form = CommentForm(request.POST)
         if form.is_valid() and not comment_form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
@@ -139,8 +129,13 @@ def user_posts(request, username):
             messages.success(request, f'Komentarz został dodany')
     else:
         form = PostForm()
-        comment_form = CommentForm_2()
+        comment_form = CommentForm()
 
+    #pagination
+    user = get_object_or_404(User, username=username, is_active=True)
+    posts = Post.objects.filter(author=user).order_by('-date_posted')
+    paginator = Paginator(posts, 3)
+    page = request.GET.get('page')
     try:
         posts = paginator.page(page)
     except PageNotAnInteger:
@@ -248,37 +243,17 @@ class CommentCreateView(LoginRequiredMixin,CreateView):
 
 
 @login_required
-@require_POST
-def post_like(request):
-    post_id = request.POST.get('id')
-    action = request.POST.get('action')
-    if post_id and action:
-        try:
-            post = Post.objects.get(id=post_id)
-            if action == 'like':
-                post.users_like.add(request.user)
-            else:
-                post.users_like.remove(request.user)
-            return JsonResponse({'status':'ok'})
-        except:
-            pass
-    return JsonResponse({'status':'ko'})
+def likePost(request):
+    if request.method == 'POST':
+        post_id = request.POST.get('post_id')
+        action = request.POST.get('action')
+        post = Post.objects.get(pk=post_id)
+        if action == 'like':
+            post.users_like.add(request.user)
+            create_action(request.user, 'polubił', post)
+        else:
+            post.users_like.remove(request.user)
+        return JsonResponse({'status':'ok'}) # Sending an success response
+    else:
+        return JsonResponse({'status':'ko'})
 
-
-@login_required
-@require_POST
-def image_like(request):
-    image_id = request.POST.get('id')
-    action = request.POST.get('action')
-    if image_id and action:
-        try:
-            image = Post.objects.get(id=image_id)
-            if action == 'like':
-                image.users_like.add(request.user)
-                create_action(request.user, 'polubił', image)
-            else:
-                image.users_like.remove(request.user)
-            return JsonResponse({'status':'ok'})
-        except:
-            pass
-    return JsonResponse({'status':'ko'})

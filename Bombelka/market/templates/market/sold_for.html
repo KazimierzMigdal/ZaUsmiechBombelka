@@ -1,0 +1,25 @@
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags%}
+{% block content %}
+<article class="media content-section">
+    <div class="media-body">
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+        <legend class="border-bottom mb-4">Ustaw jako sprzedane</legend>
+        <div class="form">
+            Jeśli sprzedałeś produkt użytkownikowi z ZaUśmiechBombelka wybierz go z listy by nadal prowadzić z nim konwersacje pieczętując sprzedaż:
+            {{ form.sold_for}}
+        </div>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-sample btn-block" type="submit">Sprzedaj</button>
+    </div>
+</form>
+<div>
+    Jeśli sprzedarz nie dotyczy żadnego z użytkowników z ZaUśmiechBombelka, usuń produkt z witryny.
+    <a href="{% url 'product-delete' product.id%}"><button class="btn btn-danger btn-block mt-4">Usuń</button></a>
+</div>
+</div>
+</article>
+{% endblock content %}

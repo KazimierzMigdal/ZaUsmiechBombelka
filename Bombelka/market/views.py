@@ -6,12 +6,18 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
+from django.core.paginator import (Paginator,
+                                EmptyPage,
+                                PageNotAnInteger)
+from django.db.models import Q
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import (CreateView,
                                 ListView,
                                 DetailView,
                                 UpdateView,
                                 DeleteView)
+from messanger_system.models import Message
 import redis
 
 
@@ -20,16 +26,30 @@ r=redis.StrictRedis(host=settings.REDIS_HOST,
                     db = settings.REDIS_DB)
 
 
-class ProductListView(LoginRequiredMixin,ListView):
-    model = Product
-    context_object_name = 'products'
-    template_name = 'market/index.html'
-    ordering = ['-date_posted']
+def main(request):
+    products = Product.objects.filter(sold=False).order_by('-date_posted')
+    paginator = Paginator(products, 3)
+    page = request.GET.get('page')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['section'] = 'market'
-        return context
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        products = paginator.page(1)
+    except EmptyPage:
+        if request.is_ajax():
+            return HttpResponse('')
+        products = paginator.page(paginator.num_pages)
+    if request.is_ajax():
+        return render(request,
+                    'market/list_ajax.html',
+                    {'products': products,
+                    'section': 'market'})
+
+    return render(request,
+                    'market/index.html',
+                    {'products': products,
+                    'section': 'market'})
+
 
 
 @login_required
@@ -110,7 +130,7 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class ProductDeleteView(LoginRequiredMixin,UserPassesTestMixin,DeleteView):
     model = Product
-    success_url = '/'
+    success_url = '/market'
 
     def test_func(self):
         product = self.get_object()
@@ -124,3 +144,42 @@ class ProductDeleteView(LoginRequiredMixin,UserPassesTestMixin,DeleteView):
         context['section'] = 'market'
         return context
 
+
+class ProductSoldView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Product
+    template_name = "market/sold_for.html"
+    fields = ['sold_for']
+
+    def form_valid(self, form):
+        form.instance.sold = True
+        return super().form_valid(form)
+
+    def test_func(self):
+        product = self.get_object()
+        if self.request.user == product.author:
+            return True
+        else:
+            return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product = self.get_object()
+        context['section'] = 'market'
+        return context
+
+    def get_form(self, form_class=None):
+        product = self.get_object()
+        messages = Message.objects.filter(Q(subject=product)&Q(parent_msg__isnull=True))
+        ids = [1,6]
+        sold_id=[]
+        for msg in messages:
+            sold_id=msg.sender.id
+            ids.append(sold_id)
+
+        queryset=User.objects.filter(id__in=sold_id)
+        if form_class is None:
+            form_class = self.get_form_class()
+        form = super(ProductSoldView, self).get_form(form_class)
+        form.fields['sold_for'] = forms.ModelChoiceField(queryset=queryset, widget = forms.Select(attrs={'class':"form-control mt-2 mb-2"}))
+        form.fields['sold_for'].lable=''
+        return form

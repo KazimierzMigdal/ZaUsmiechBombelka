@@ -1,12 +1,15 @@
 from .models import Action
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.paginator import (Paginator,
+                                EmptyPage,
+                                PageNotAnInteger)
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import render
 from market.models import Product
 from users.models import Profile
 import redis
-
 
 r=redis.StrictRedis(host=settings.REDIS_HOST,
                     port=settings.REDIS_PORT,
@@ -14,20 +17,16 @@ r=redis.StrictRedis(host=settings.REDIS_HOST,
 
 
 def actions(request):
-    product_ranking = r.zrange('product_ranking', 0, -1, desc=True)
-    product_ranking_ids = [int(id) for id in product_ranking]
-    following_ids = request.user.following.values_list('id',
-                                                       flat=True)
-
-    interested_sex_tag = request.user.profile.interested_sex_tag
-    interested_age_tag = request.user.profile.interested_age_tag
-
+    #actions selector
+    following_ids = request.user.following.values_list('id',flat=True)
     actions = []
     if following_ids:
         actions = Action.objects.exclude(user=request.user).filter(user_id__in=following_ids)
         actions = actions.select_related('user', 'user__profile').prefetch_related('target')
 
     #profile recomendation
+    interested_sex_tag = request.user.profile.interested_sex_tag
+    interested_age_tag = request.user.profile.interested_age_tag
     Users = User.objects.all().exclude(id=request.user.id)
     best_profile_match = Users.filter(
             Q(profile__sold_sex_tag = interested_age_tag) & Q(profile__sold_sex_tag = interested_sex_tag)
@@ -66,6 +65,8 @@ def actions(request):
     users = users[:4]
 
     #product recomendation
+    product_ranking = r.zrange('product_ranking', 0, -1, desc=True)
+    product_ranking_ids = [int(id) for id in product_ranking]
     Products = Product.objects.all().exclude(author=request.user).exclude(author=request.user)
     best_product_match = Products.filter(
         Q(tag_sex=interested_sex_tag)&Q(tag_age=interested_age_tag)
@@ -99,8 +100,11 @@ def actions(request):
     products = []
     for QuerySet in [best_product_match, secoud_product_match, third_product_match]:
         QuerySet = list(QuerySet)
-        QuerySet.sort(key=lambda x: product_ranking_ids.index(x.id))
-        products = products + QuerySet
+        try:
+            QuerySet.sort(key=lambda x: product_ranking_ids.index(x.id))
+            products = products + QuerySet
+        except:
+             products = products + QuerySet
 
     if len(products)<4:
         p = list(Products)
@@ -108,7 +112,30 @@ def actions(request):
 
     products = products[:4]
 
-    return render(request, 'actions/action/detail.html', {'section': 'actions',
-                                                        'actions': actions,
-                                                        'products': products,
-                                                        'users':users})
+    #pagination
+    paginator = Paginator(actions, 3)
+    page = request.GET.get('page')
+    try:
+        actions = paginator.page(page)
+    except PageNotAnInteger:
+        actions = paginator.page(1)
+    except EmptyPage:
+        if request.is_ajax():
+            return HttpResponse('')
+        actions = paginator.page(paginator.num_pages)
+    if request.is_ajax():
+        return render(request,
+                    'actions/action/list_ajax.html',
+                    {'section': 'actions',
+                    'actions': actions,
+                    'products': products,
+                    'users':users})
+
+    return render(request,
+                'actions/action/detail.html',
+                {'section': 'actions',
+                'actions': actions,
+                'products': products,
+                'users':users})
+
+

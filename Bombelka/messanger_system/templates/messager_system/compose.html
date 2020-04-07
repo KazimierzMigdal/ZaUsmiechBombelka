@@ -1,0 +1,26 @@
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags%}
+{% block content %}
+<h1>{{ product.title }}</h1>
+<h6>Z <a class="mr-2" href="{% url 'profile' product.author.username %}">{{ product.author }}</a></h6>
+
+<div class="sticky-top">
+    <article class="media content-section">
+        <div class="media-body">
+            <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="form-group col mb-2">
+                            {{ form.text|as_crispy_field }}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-sample btn-block" type="submit"><span style="font-size:smaller;">Wyślij wiadomość</span></button>
+                </div>
+            </form>
+        </div>
+    </article>
+</div>
+{% endblock content %}

@@ -1,4 +1,5 @@
 {% load static %}
+{% load messages_tags %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,8 +23,8 @@
       }
     </script>
 
-    {% if title %}
-    <title>Za Uśmiech Bombelka - {{title}}</title>
+    {% if section %}
+    <title>Za Uśmiech Bombelka - {{section}}</title>
     {% else %}
     <title>Za Uśmiech Bombelka</title>
     {% endif %}
@@ -49,7 +50,7 @@
           <!-- Navbar Right Side -->
           <div class="navbar-nav">
             {% if user.is_authenticated %}
-              <a class="nav-item nav-link" href="#">Wiadomości</a>
+              <a class="nav-item nav-link" href="{% url 'messages-home' %}">Wiadomości</a>
               <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
             {% else %}
               <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
@@ -79,7 +80,7 @@
             {% if user.is_authenticated%}
               <a class="mr-2" href="{% url 'blog-home' %}"><button {%if section == 'blog' %} class="btn btn-sample btn-block"{% endif %}class="btn btn-outline-info btn-block">Blog</button></a>
               <a class="mr-2" href="{% url 'market-home' %}"><button {%if section == 'market' %} class="btn btn-sample btn-block"{% endif %}class="btn btn-outline-info btn-block">Market</button></a>
-              <a class="mr-2" href="#"><button {%if section == 'Wiadomości' %} class="btn btn-sample btn-block"{% endif %}class="btn btn-outline-info btn-block">Wiadomości</button></a>
+              <a class="mr-2" href="{% url 'messages-home' %}"><button {%if section == 'messages' %} class="btn btn-sample btn-block"{% endif %}class="btn btn-outline-info btn-block">Wiadomości ({% new_messages %})</button></a>
                <a class="mr-2" href="{% url 'actions' %}"><button {%if section == 'actions' %} class="btn btn-sample btn-block"{% endif %}class="btn btn-outline-info btn-block">Aktualności</button></a>
             {% else %}
               <a class="mr-2" href="{% url 'post-create' %}"><button class="btn btn-sample btn-block">Zaloguj się przez Facebook</button></a>
@@ -98,6 +99,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src=" http://cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.min.js "></script>
 <script>
+    $(document).ready(function(){
     var csrftoken = $.cookie('csrftoken');
     function csrfSafeMethod(method) {
         // these HTTP methods do not require CSRF protection
@@ -110,9 +112,8 @@
         }
         }
     });
-    $(document).ready(function(){
-        {% block domready %}
-        {% endblock %}
+      {% block domready %}
+      {% endblock %}
     });
 </script>
 </body>
