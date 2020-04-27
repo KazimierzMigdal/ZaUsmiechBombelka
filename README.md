@@ -24,7 +24,7 @@ git clone https://github.com/KazimierzMigdal/ZaUsmiechBombelka.git
 pip install -r requirements.txt
 ```
 
-**7.** Run redis-cli on default (6379) port
+**7.** Run redis-server on default (6379) port
 
 **8** Go to main directory and run server by typing
 ```
