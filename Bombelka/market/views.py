@@ -6,9 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
-from django.core.paginator import (Paginator,
-                                EmptyPage,
-                                PageNotAnInteger)
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
@@ -24,44 +22,6 @@ import redis
 r=redis.StrictRedis(host=settings.REDIS_HOST,
                     port=settings.REDIS_PORT,
                     db = settings.REDIS_DB)
-
-
-def main(request):
-    products = Product.objects.filter(sold=False).order_by('-date_posted')
-    paginator = Paginator(products, 3)
-    page = request.GET.get('page')
-
-    try:
-        products = paginator.page(page)
-    except PageNotAnInteger:
-        products = paginator.page(1)
-    except EmptyPage:
-        if request.is_ajax():
-            return HttpResponse('')
-        products = paginator.page(paginator.num_pages)
-    if request.is_ajax():
-        return render(request,
-                    'market/list_ajax.html',
-                    {'products': products,
-                    'section': 'market'})
-
-    return render(request,
-                    'market/index.html',
-                    {'products': products,
-                    'section': 'market'})
-
-
-
-@login_required
-def user_products(request, username):
-    user = get_object_or_404(User,
-                username=username,
-                is_active=True)
-    products = Product.objects.filter(author=user).order_by('-date_posted')
-
-    return render(request,
-                'market/index.html',
-                {'products':products})
 
 
 class ProductCreateView(LoginRequiredMixin,CreateView):
@@ -94,6 +54,23 @@ class ProductCreateView(LoginRequiredMixin,CreateView):
         return form
 
 
+class ProductDeleteView(LoginRequiredMixin,UserPassesTestMixin,DeleteView):
+    model = Product
+    success_url = '/market'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['section'] = 'market'
+        return context
+
+    def test_func(self):
+        product = self.get_object()
+        if self.request.user == product.author:
+            return True
+        else:
+            return False
+
+
 class ProductDetailView(LoginRequiredMixin,DetailView):
     model = Product
 
@@ -107,59 +84,10 @@ class ProductDetailView(LoginRequiredMixin,DetailView):
         return context
 
 
-class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Product
-    fields = ['title', 'description', 'photo_1', 'photo_2', 'photo_3', 'tag_sex','tag_age', 'price']
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
-
-    def test_func(self):
-        product = self.get_object()
-        if self.request.user == product.author:
-            return True
-        else:
-            return False
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['section'] = 'market'
-        return context
-
-
-class ProductDeleteView(LoginRequiredMixin,UserPassesTestMixin,DeleteView):
-    model = Product
-    success_url = '/market'
-
-    def test_func(self):
-        product = self.get_object()
-        if self.request.user == product.author:
-            return True
-        else:
-            return False
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['section'] = 'market'
-        return context
-
-
 class ProductSoldView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Product
     template_name = "market/sold_for.html"
     fields = ['sold_for']
-
-    def form_valid(self, form):
-        form.instance.sold = True
-        return super().form_valid(form)
-
-    def test_func(self):
-        product = self.get_object()
-        if self.request.user == product.author:
-            return True
-        else:
-            return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -183,3 +111,72 @@ class ProductSoldView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         form.fields['sold_for'] = forms.ModelChoiceField(queryset=queryset, widget = forms.Select(attrs={'class':"form-control mt-2 mb-2"}))
         form.fields['sold_for'].lable=''
         return form
+
+    def form_valid(self, form):
+        form.instance.sold = True
+        return super().form_valid(form)
+
+    def test_func(self):
+        product = self.get_object()
+        if self.request.user == product.author:
+            return True
+        else:
+            return False
+
+
+class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Product
+    fields = ['title', 'description', 'photo_1', 'photo_2', 'photo_3', 'tag_sex','tag_age', 'price']
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['section'] = 'market'
+        return context
+
+    def test_func(self):
+        product = self.get_object()
+        if self.request.user == product.author:
+            return True
+        else:
+            return False
+
+
+def main(request):
+    products = Product.objects.filter(sold=False).order_by('-date_posted')
+    paginator = Paginator(products, 3)
+    page = request.GET.get('page')
+
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        products = paginator.page(1)
+    except EmptyPage:
+        if request.is_ajax():
+            return HttpResponse('')
+        products = paginator.page(paginator.num_pages)
+    if request.is_ajax():
+        return render(request,
+                    'market/list_ajax.html',
+                    {'products': products,
+                    'section': 'market'})
+
+    return render(request,
+                    'market/index.html',
+                    {'products': products,
+                    'section': 'market'})
+
+
+@login_required
+def user_products(request, username):
+    user = get_object_or_404(User,
+                username=username,
+                is_active=True)
+    products = Product.objects.filter(author=user).order_by('-date_posted')
+
+    return render(request,
+                'market/index.html',
+                {'products':products})

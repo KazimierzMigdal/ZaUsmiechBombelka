@@ -6,3 +6,5 @@ django-crispy-forms==1.7.2
 idna==2.7
 Pillow==7.0.0
 pytz==2018.5
+redis==3.4.1
+setuptools==41.2.0
