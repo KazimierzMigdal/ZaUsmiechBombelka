@@ -30,7 +30,7 @@ pip install -r requirements.txt
 ```
 python manage.py runserver
 ```
-The **ZaUsmiechBombelka** is available at the address http://127.0.0.1
+The **ZaUsmiechBombelka** is available at the address http://127.0.0.1:8000
 
 ## Superuser:
 Super User is already created.
